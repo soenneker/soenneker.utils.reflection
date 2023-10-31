@@ -10,18 +10,28 @@ public class ReflectionUtil : IReflectionUtil
 {
     public static Dictionary<string, string> GetConstantsFromType<T>()
     {
+        Type type = typeof(T);
+        return InternalGetConstantsFromType(type);
+    }
+
+    public static Dictionary<string, string> GetConstantsFromType(Type type)
+    {
+        return InternalGetConstantsFromType(type);
+    }
+
+    private static Dictionary<string, string> InternalGetConstantsFromType(IReflect type)
+    {
         var constantsDictionary = new Dictionary<string, string>();
 
-        Type type = typeof(T);
         FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
 
         foreach (FieldInfo field in fields)
         {
-            if (!field.IsLiteral || field.IsInitOnly) 
+            if (!field.IsLiteral || field.IsInitOnly)
                 continue;
-            
+
             string name = field.Name;
-            string value = field.GetValue(null)!.ToString()!;
+            var value = field.GetValue(null)!.ToString()!;
             constantsDictionary[name] = value;
         }
 
