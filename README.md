@@ -8,5 +8,5 @@
 ## Installation
 
 ```
-Install-Package Soenneker.Utils.Reflection
+dotnet add package Soenneker.Utils.Reflection
 ```
