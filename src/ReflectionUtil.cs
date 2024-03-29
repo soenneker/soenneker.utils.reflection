@@ -19,7 +19,7 @@ public class ReflectionUtil : IReflectionUtil
         return InternalGetConstantsFromType(type);
     }
 
-    private static Dictionary<string, string> InternalGetConstantsFromType(IReflect type)
+    private static Dictionary<string, string> InternalGetConstantsFromType(Type type)
     {
         var constantsDictionary = new Dictionary<string, string>();
 
