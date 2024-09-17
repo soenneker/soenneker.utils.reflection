@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\src\Soenneker.Utils.Reflection.csproj" />
+        <ProjectReference Include="..\..\src\Soenneker.Utils.Reflection.csproj" />
     </ItemGroup>
 
 </Project>
