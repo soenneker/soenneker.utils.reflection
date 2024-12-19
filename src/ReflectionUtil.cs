@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Soenneker.Utils.Reflection.Abstract;
 
 namespace Soenneker.Utils.Reflection;
 
-///<inheritdoc cref="IReflectionUtil"/>
-public class ReflectionUtil : IReflectionUtil
+public static class ReflectionUtil
 {
     public static Dictionary<string, string> GetConstantsFromType<T>()
     {
