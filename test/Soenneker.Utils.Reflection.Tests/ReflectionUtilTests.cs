@@ -1,10 +1,9 @@
-using Xunit;
 
 namespace Soenneker.Utils.Reflection.Tests;
 
 public class ReflectionUtilTests 
 {
-    [Fact]
+    [Test]
     public void Default()
     {
 
