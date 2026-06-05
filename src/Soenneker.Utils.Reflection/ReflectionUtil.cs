@@ -4,6 +4,9 @@ using System.Reflection;
 
 namespace Soenneker.Utils.Reflection;
 
+/// <summary>
+/// Represents the reflection util.
+/// </summary>
 public static class ReflectionUtil
 {
     /// <summary>
