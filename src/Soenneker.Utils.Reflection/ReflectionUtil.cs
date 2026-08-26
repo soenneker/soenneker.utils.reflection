@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Reflection;
 
 namespace Soenneker.Utils.Reflection;
@@ -9,6 +10,8 @@ namespace Soenneker.Utils.Reflection;
 /// </summary>
 public static class ReflectionUtil
 {
+    private static readonly ConcurrentDictionary<Type, KeyValuePair<string, string>[]> _constantCache = new();
+
     /// <summary>
     /// Retrieves a dictionary containing the names and values of all public constant fields
     /// defined in the specified generic type <typeparamref name="T"/>.
@@ -56,33 +59,27 @@ public static class ReflectionUtil
     /// </remarks>
     private static Dictionary<string, string> InternalGetConstantsFromType(Type type)
     {
-        // Precompute the capacity to avoid internal resizing of the dictionary.
-        FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
+        ArgumentNullException.ThrowIfNull(type);
 
-        var estimatedCapacity = 0;
-
-        foreach (FieldInfo field in fields)
+        KeyValuePair<string, string>[] constants = _constantCache.GetOrAdd(type, static t =>
         {
-            if (field is {IsLiteral: true, IsInitOnly: false})
+            FieldInfo[] fields = t.GetFields(BindingFlags.Public | BindingFlags.Static);
+            var values = new List<KeyValuePair<string, string>>(fields.Length);
+
+            foreach (FieldInfo field in fields)
             {
-                estimatedCapacity++;
+                if (!field.IsLiteral || field.IsInitOnly || field.GetValue(null) is not string value)
+                    continue;
+
+                values.Add(new KeyValuePair<string, string>(field.Name, value));
             }
-        }
 
-        var constantsDictionary = new Dictionary<string, string>(estimatedCapacity);
+            return values.ToArray();
+        });
 
-        foreach (FieldInfo field in fields)
-        {
-            if (!field.IsLiteral || field.IsInitOnly)
-                continue;
-
-            string name = field.Name;
-            object? value = field.GetValue(null);
-            if (value is string stringValue)
-            {
-                constantsDictionary[name] = stringValue;
-            }
-        }
+        var constantsDictionary = new Dictionary<string, string>(constants.Length);
+        for (var i = 0; i < constants.Length; i++)
+            constantsDictionary.Add(constants[i].Key, constants[i].Value);
 
         return constantsDictionary;
     }
