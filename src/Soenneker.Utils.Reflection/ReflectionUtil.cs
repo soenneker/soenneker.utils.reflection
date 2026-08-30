@@ -14,7 +14,7 @@ public static class ReflectionUtil
 
     /// <summary>
     /// Retrieves a dictionary containing the names and values of all public constant fields
-    /// defined in the specified generic type <typeparamref name="T"/>.
+    /// available on the specified generic type <typeparamref name="T"/>, including inherited public fields.
     /// </summary>
     /// <typeparam name="T">The type to extract constant fields from.</typeparam>
     /// <returns>
@@ -30,7 +30,7 @@ public static class ReflectionUtil
 
     /// <summary>
     /// Retrieves a dictionary containing the names and values of all public constant fields
-    /// defined in the specified type.
+    /// available on the specified type, including inherited public fields.
     /// </summary>
     /// <param name="type">The type to extract constant fields from.</param>
     /// <returns>
@@ -47,7 +47,7 @@ public static class ReflectionUtil
 
     /// <summary>
     /// Retrieves a dictionary containing the names and values of all public constant fields
-    /// defined in the specified type.
+    /// available on the specified type, including inherited public fields.
     /// </summary>
     /// <param name="type">The type to extract constant fields from.</param>
     /// <returns>

@@ -20,6 +20,33 @@ using Soenneker.Utils.Reflection;
 
 Call the static `ReflectionUtil` methods directly; no dependency-injection registration is required.
 
-## Common operations
+## Usage
 
-- `GetConstantsFromType()` - Retrieves a dictionary containing the names and values of all public constant fields defined in the specified generic type `T`.
+```csharp
+public static class Headers
+{
+    public const string RequestId = "X-Request-Id";
+    public const string CorrelationId = "X-Correlation-Id";
+
+    public const int MaximumLength = 128; // ignored: not a string
+    public static readonly string RuntimeValue = "ignored"; // ignored: not const
+}
+
+Dictionary<string, string> headers = ReflectionUtil.GetConstantsFromType<Headers>();
+
+// The runtime-Type overload is equivalent:
+Dictionary<string, string> sameHeaders = ReflectionUtil.GetConstantsFromType(typeof(Headers));
+```
+
+The result contains public static literal fields whose value is a non-null string. Non-public
+fields, `static readonly` fields, non-string constants, and null string constants are ignored.
+Public inherited constants returned by `Type.GetFields(BindingFlags.Public | BindingFlags.Static)`
+are included as well.
+
+Metadata is reflected once per `Type` and cached for the process lifetime. Every call materializes
+a new case-sensitive `Dictionary<string, string>`, so adding or removing entries from the returned
+dictionary does not affect later callers. The cache has no eviction; avoid feeding an unbounded
+stream of dynamically generated types.
+
+Field order is not part of the contract. If a type hierarchy exposes multiple included fields with
+the same name, dictionary materialization throws because names are used as unique keys.
