@@ -1,4 +1,5 @@
-﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Reflection;
@@ -23,7 +24,7 @@ public static class ReflectionUtil
     /// <remarks>
     /// Only public, static, and literal constant fields of type <see cref="string"/> are included in the result.
     /// </remarks>
-    public static Dictionary<string, string> GetConstantsFromType<T>()
+    public static Dictionary<string, string> GetConstantsFromType<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] T>()
     {
         return InternalGetConstantsFromType(typeof(T));
     }
@@ -40,7 +41,7 @@ public static class ReflectionUtil
     /// <remarks>
     /// Only public, static, and literal constant fields of type <see cref="string"/> are included in the result.
     /// </remarks>
-    public static Dictionary<string, string> GetConstantsFromType(Type type)
+    public static Dictionary<string, string> GetConstantsFromType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type)
     {
         return InternalGetConstantsFromType(type);
     }
@@ -57,13 +58,13 @@ public static class ReflectionUtil
     /// This method performs the core extraction logic. It only includes public, static, literal constants
     /// of type <see cref="string"/>. Fields that are not constants or are not of type <see cref="string"/> are ignored.
     /// </remarks>
-    private static Dictionary<string, string> InternalGetConstantsFromType(Type type)
+    private static Dictionary<string, string> InternalGetConstantsFromType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type)
     {
         ArgumentNullException.ThrowIfNull(type);
 
-        KeyValuePair<string, string>[] constants = _constantCache.GetOrAdd(type, static t =>
+        KeyValuePair<string, string>[] constants = _constantCache.GetOrAdd(type, _ =>
         {
-            FieldInfo[] fields = t.GetFields(BindingFlags.Public | BindingFlags.Static);
+            FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
             var values = new List<KeyValuePair<string, string>>(fields.Length);
 
             foreach (FieldInfo field in fields)
